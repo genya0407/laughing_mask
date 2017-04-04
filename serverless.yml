@@ -37,18 +37,18 @@ provider:
 
 # you can add statements to the Lambda function's IAM Role here
   iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource: "arn:aws:s3:::raw.waraiotoko"
-    - Effect: "Allow"
-      Action:
-        - "s3:GetObject"
-      Resource: "arn:aws:s3:::raw.waraiotoko/*"
-    - Effect: "Allow"
-      Action:
-        - "s3:PutObject"
-      Resource: "arn:aws:s3:::hidden.waraiotoko/*"
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:ListBucket"
+#      Resource: "arn:aws:s3:::raw.waraiotoko"
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:GetObject"
+#      Resource: "arn:aws:s3:::raw.waraiotoko/*"
+#    - Effect: "Allow"
+#      Action:
+#        - "s3:PutObject"
+#      Resource: "arn:aws:s3:::hidden.waraiotoko/*"
     - Effect: "Allow"
       Action:
         - "rekognition:*"
@@ -69,17 +69,17 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+#  hello:
+#    handler: handler.hello
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
-    events:
+#    events:
 #      - http:
 #          path: image
 #          method: post
-      - s3: raw.waraiotoko
+#      - s3: raw.waraiotoko
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
 #      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
@@ -99,6 +99,12 @@ functions:
 #    Define function environment variables here
 #    environment:
 #      variable2: value2
+  upload:
+    handler: handler.upload
+    events:
+      - http:
+          path: image
+          method: post
 
 # you can add CloudFormation resource templates here
 #resources:

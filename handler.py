@@ -3,41 +3,42 @@ import boto3
 import os
 import pprint
 from PIL import Image
+import base64
 
 bucket_hidden = "hidden.waraiotoko"
 s3 = boto3.client('s3')
 rek = boto3.client('rekognition')
 
-def hello(event, context):
-    for record in event['Records']:
-        face_details = get_face_details(record)
-        img_path = download_img(record)
-        mount_laughing_face(img_path, face_details)
-        s3.upload_file(img_path, bucket_hidden, os.path.basename(img_path))
+def upload(event, context):
+    body = json.loads(event['body'])
+    byte = base64.b64decode(body['image'])
 
-def get_face_details(record):
-    bucket = record['s3']['bucket']['name']
-    key = record['s3']['object']['key']
+    input_path = '/tmp/input.img'
+    output_path = '/tmp/output.png'
+    with open(input_path, 'wb') as input_file:
+        input_file.write(byte)
 
+    face_details = get_face_details_from_blob(byte)
+    mount_laughing_face(input_path, output_path, face_details)
+
+    with open(output_path, 'rb') as output_file:
+        output_b64 = base64.b64encode(output_file.read())
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            'image': output_b64
+        })
+    }
+
+def get_face_details_from_blob(byte):
     response = rek.detect_faces(
         Image={
-            'S3Object': {
-                'Bucket': bucket,
-                'Name': key
-            }
+            'Bytes': byte
         }
     )
 
     return response['FaceDetails']
-
-def download_img(record):
-    bucket = record['s3']['bucket']['name']
-    key = record['s3']['object']['key']
-
-    img_path = '/tmp/' + key
-    s3.download_file(bucket, key, img_path)
-
-    return img_path
 
 def laugh_size(face, orig):
     laugh_height = 530.
@@ -70,14 +71,13 @@ def laugh_crop_size(face, orig):
 def fit_laugh(face, laugh, orig):
     return laugh.resize(laugh_size(face, orig)).crop(laugh_crop_size(face, orig))
 
-def mount_laughing_face(img_path, face_details):
-    orig = Image.open(img_path)
+def mount_laughing_face(input_path, output_path, face_details):
+    orig = Image.open(input_path)
     orig = orig.convert('RGBA')
     laugh = Image.open('laughing_man.gif')
     for face in face_details:
         warai_layer = Image.new('RGBA', orig.size, (255, 255,255, 0))
         warai_layer.paste(fit_laugh(face, laugh, orig), box=laugh_position(face, orig))
         orig = Image.alpha_composite(orig, warai_layer)
-    orig.save(img_path)
-
+    orig.save(output_path)
 

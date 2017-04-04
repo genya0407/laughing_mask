@@ -17,10 +17,18 @@ service: waraiotoko # NOTE: update this with your service name
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
 
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+
 provider:
   name: aws
   runtime: python2.7
-  memory: 128
+  memorySize: 256
+  timeout: 100
 
 # you can overwrite defaults here
   stage: dev
@@ -37,6 +45,15 @@ provider:
       Action:
         - "s3:GetObject"
       Resource: "arn:aws:s3:::raw.waraiotoko/*"
+    - Effect: "Allow"
+      Action:
+        - "s3:PutObject"
+      Resource: "arn:aws:s3:::hidden.waraiotoko/*"
+    - Effect: "Allow"
+      Action:
+        - "rekognition:IndexFaces"
+        - "rekognition:CreateCollection"
+      Resource: "arn:aws:rekognition:us-west-2:*:*"
 
 # you can define service wide environment variables here
 #  environment:

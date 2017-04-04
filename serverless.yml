@@ -105,6 +105,7 @@ functions:
       - http:
           path: image
           method: post
+          cors: true
 
 # you can add CloudFormation resource templates here
 #resources:

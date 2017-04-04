@@ -1,7 +1,16 @@
 <uploader>
-	<h1>Laughing man</h1>
+    <div class="file-field input-field">
+		<div class="waves-effect waves-light btn uploader-header-buttons">
+			<span><i class="material-icons right">file_upload</i>Upload</span>
+			<input type='file' onchange='{handleSelectFiles}'/>
+		</div>
+		<a href='{download_data}' class='waves-effect waves-light btn uploader-header-buttons {button_disabled}' download='masked.png'>
+			<i class="material-icons right">file_download</i>
+			<span>Download</span>
+		</a>
+    	<div class="file-path-wrapper"></div>
+    </div>
 
-	<input type='file' onchange='{handleSelectFiles}'/>
 	<div id='image-canvas'>
 		<img src='{image}' class='{img_class}' />
 		<div class="{loader_class}">
@@ -29,6 +38,8 @@
 		this.image = './no_data.jpg';
 		this.img_class = '';
 		this.loader_class = '';
+		this.button_disabled = 'disabled';
+		this.download_data = '';
 
 		handleSelectFiles(evt){
 		    const file = evt.target.files[0];
@@ -63,20 +74,27 @@
 				this.image = 'data:image/png;base64,' + response.data.image;
 				this.loader_class = '';
 				this.img_class = '';
+				this.button_disabled = '';
+				this.download_data = this.image;
 				this.update();
 		    }));
 	    }
     </script>
 
-    <style>
+    <style type='text/css'>
     	uploader {
     		width: 100%;
     		margin: 0px, auto, 0px, auto;
     	}
 
+    	div.uploader-header-buttons {
+    		margin: auto 5px auto 5px;
+    		color: white;
+    	}
+
     	div#image-canvas {
     		position: relative;
-    		margin-top: 10px;
+    		margin-top: 50px;
     		width: 100%;
 	    }
 
@@ -89,6 +107,9 @@
 	    	filter: brightness(0.4);
 	    }
 
+    </style>
+
+    <style type="text/css">
 		.windows8 {
 			position: absolute;
 			top: 100px;

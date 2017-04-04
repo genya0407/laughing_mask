@@ -4,10 +4,18 @@
     <meta charset="utf-8" />
     <script src='https://cdnjs.cloudflare.com/ajax/libs/riot/2.3.18/riot+compiler.js'></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.1/js/materialize.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Laughing man</title>
   </head>
   <body>
-    <uploader name='Annoy-o-Tron' quote='Hello, Hello, Hello' ></uploader>
+    <h1>Laughing man</h1>
+
+    <p>Upload your photos, and faces are masked.</p>
+
+    <uploader></uploader>
     <script src="./uploader.tag" type="riot/tag"></script>
     <script>
       riot.mount('*');

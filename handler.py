@@ -5,30 +5,21 @@ import pprint
 from PIL import Image
 
 bucket_hidden = "hidden.waraiotoko"
-collection_id = 'waraiotoko'
 s3 = boto3.client('s3')
 rek = boto3.client('rekognition')
 
 def hello(event, context):
     for record in event['Records']:
-        face_records = get_face_records(record)
+        face_details = get_face_details(record)
         img_path = download_img(record)
-        mount_laughing_face(img_path, face_records)
+        mount_laughing_face(img_path, face_details)
         s3.upload_file(img_path, bucket_hidden, os.path.basename(img_path))
 
-def get_face_records(record):
+def get_face_details(record):
     bucket = record['s3']['bucket']['name']
     key = record['s3']['object']['key']
 
-    try:
-        rek.create_collection(
-            CollectionId=collection_id
-        )
-    except:
-        pass
-
-    response = rek.index_faces(
-        CollectionId=collection_id,
+    response = rek.detect_faces(
         Image={
             'S3Object': {
                 'Bucket': bucket,
@@ -37,7 +28,7 @@ def get_face_records(record):
         }
     )
 
-    return response['FaceRecords']
+    return response['FaceDetails']
 
 def download_img(record):
     bucket = record['s3']['bucket']['name']
@@ -79,12 +70,11 @@ def laugh_crop_size(face, orig):
 def fit_laugh(face, laugh, orig):
     return laugh.resize(laugh_size(face, orig)).crop(laugh_crop_size(face, orig))
 
-def mount_laughing_face(img_path, face_records):
+def mount_laughing_face(img_path, face_details):
     orig = Image.open(img_path)
     orig = orig.convert('RGBA')
     laugh = Image.open('laughing_man.gif')
-    for face_record in face_records:
-        face = face_record['Face']
+    for face in face_details:
         warai_layer = Image.new('RGBA', orig.size, (255, 255,255, 0))
         warai_layer.paste(fit_laugh(face, laugh, orig), box=laugh_position(face, orig))
         orig = Image.alpha_composite(orig, warai_layer)

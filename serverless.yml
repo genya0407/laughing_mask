@@ -11,7 +11,7 @@
 #
 # Happy Coding!
 
-service: waraiotoko # NOTE: update this with your service name
+service: waraiotoko2 # NOTE: update this with your service name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
@@ -51,9 +51,8 @@ provider:
       Resource: "arn:aws:s3:::hidden.waraiotoko/*"
     - Effect: "Allow"
       Action:
-        - "rekognition:IndexFaces"
-        - "rekognition:CreateCollection"
-      Resource: "arn:aws:rekognition:us-west-2:*:*"
+        - "rekognition:*"
+      Resource: "*"
 
 # you can define service wide environment variables here
 #  environment:
